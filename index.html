@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钟裕 - 设计作品集</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0e0e10; /* 深色暗黑背景，最能衬托 UI 和视觉设计稿的质感 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding-bottom: 60px;
+        }
+
+        /* 顶部固定的极简提示条 */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(14, 14, 16, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #ffffff;
+            padding: 12px 20px; /* 保持状态栏左右留白与图片一致为 20px */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 9999;
+        }
+
+        .nav-title {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-status {
+            font-size: 12px;
+            color: #a1a1aa;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease; 
+        }
+
+        /* 专门适配 PDF 导出的图片容器 */
+        .portfolio-container {
+            width: 100%;
+            max-width: 1280px; /* 已修改：最大宽度限制为 1280px */
+            margin-top: 60px;  /* 给顶部导航留出空间 */
+            padding: 0 20px;   /* 左右留白保持 20px */
+            display: flex;
+            flex-direction: column;
+            gap: 16px; /* 每张图片之间的垂直间距保持 16px */
+        }
+
+        .page-box {
+            width: 100%;
+            background-color: #18181b;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        /* 鼠标悬停在页面上有微微浮起的效果 */
+        .page-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .page-box img {
+            width: 100%;
+            height: auto;
+            display: block; /* 消除图片底部默认的微小空白间隙 */
+        }
+
+        /* 针对手机端界面的自适应调优 */
+        @media (max-width: 768px) {
+            .top-navbar {
+                padding: 12px 16px;
+            }
+            .portfolio-container {
+                padding: 0 8px;
+                gap: 8px; /* 手机端保持紧凑间距 */
+            }
+            .nav-status {
+                font-size: 11px;
+                padding: 2px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-navbar">
+        <div class="nav-title">ZHONG YU · 设计作品集</div>
+        <div class="nav-status" id="status-text">第 1 / 47 页</div>
+    </div>
+
+    <div class="portfolio-container" id="portfolio">
+        <script>
+            const container = document.getElementById('portfolio');
+            const statusText = document.getElementById('status-text');
+            const totalPages = 47;
+
+            // 1. 自动生成 47 页图片节点
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBox = document.createElement('div');
+                pageBox.className = 'page-box';
+                pageBox.setAttribute('data-page', i); 
+
+                const img = document.createElement('img');
+                img.src = `images/${i}.webp`; 
+                img.alt = `作品集第 ${i} 页`;
+                img.loading = i > 3 ? 'lazy' : 'eager'; 
+
+                pageBox.appendChild(img);
+                container.appendChild(pageBox);
+            }
+
+            // 2. 创建智能视口观察器，滚动时精准更新页码
+            const observerOptions = {
+                root: null, 
+                rootMargin: '-20% 0px -40% 0px', 
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const currentPage = entry.target.getAttribute('data-page');
+                        statusText.innerText = `第 ${currentPage} / 47 页`;
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.page-box').forEach(box => {
+                observer.observe(box);
+            });
+        </script>
+    </div>
+
+</body>
+</html>
